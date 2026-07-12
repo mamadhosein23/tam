@@ -3,7 +3,7 @@ const machines = [
   { id: 2, title: "تعویض پمپ", price: 30000, isAvailable: false },
   { id: 3, title: "جرم‌گیری", price: 150000, isAvailable: true }
 ];
-functio MachineCard ({title,price,isAvailable}){
+function MachineCard ({title,price,isAvailable}){
     return(
         <div>
           <h3>{title}</h3>
