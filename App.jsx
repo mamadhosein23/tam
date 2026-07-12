@@ -7,7 +7,7 @@ function MachineCard ({title,price,isAvailable}){
     return(
         <div>
           <h3>{title}</h3>
-      <p>قیمت: {price} ریال</p>
+      <p>قیمت: {price} تومان</p>
       <p>{isAvailable ? "آماده ارائه" : "غیرفعال"}</p>
     </div>
      ) ;
