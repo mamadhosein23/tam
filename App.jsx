@@ -1,5 +1,5 @@
 const machines = [
-  { id: 1, title: "تعمیر برد", price: 500000, isAvailable: true },
+  { id: 1, title: "تعمیر برد", price: 5000000, isAvailable: true },
   { id: 2, title: "تعویض پمپ", price: 30000, isAvailable: false },
   { id: 3, title: "جرم‌گیری", price: 150000, isAvailable: true }
 ];
