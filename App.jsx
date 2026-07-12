@@ -28,6 +28,6 @@ function MachineCard ({title,price,isAvailable}){
     </div>
   );
      }
-
+      }
     
 
