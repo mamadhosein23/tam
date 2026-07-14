@@ -1,4 +1,5 @@
-// data/machines
+// data/machine
+
 
 export const machines = [
   { id: 1, title: "تعمیر برد", price: 50000, isAvailable: true },
