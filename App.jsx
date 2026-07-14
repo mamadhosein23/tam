@@ -1,4 +1,4 @@
-// data/machine
+// data/machin
 
 
 export const machines = [
