@@ -1,6 +1,6 @@
 // data/machines.js
 export const machines = [
-
+  { id: 1, title: "تعویض شیربرقی", price: 35000, isAvailable: false } ,
   { id: 2, title: "تعویض پمپ", price: 30000, isAvailable: false } ,
   { id: 3, title: "جرم‌گیری", price: 150000, isAvailable: true } ,
 ];
