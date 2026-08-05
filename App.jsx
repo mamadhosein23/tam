@@ -1,7 +1,7 @@
-import { useState,   
+import {    
 import { createRoot } from "react-dom/client";
 
-const API_URL = "https://api.tamironlineesfahan.ir/services"; // بک‌اند FastAPI خودت
+const API_URL = "https://api.tamironlineesfahan.ir/services";
 
 function ServiceCard({ service, onRequest }) {
   const { title, price, isAvailable } = service;
