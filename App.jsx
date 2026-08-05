@@ -1,4 +1,4 @@
-import {    
+   
 import { createRoot } from "react-dom/client";
 
 const API_URL = "https://api.tamironlineesfahan.ir/services";
@@ -19,7 +19,7 @@ function ServiceCard({ service, onRequest }) {
 
 function RequestForm({ service, onClose, onSubmit }) {
   const [form, setForm] = useState({ name: "", phone: "", address: "" });
-  const [status, setStatus] = useState("idle"); // idle | sending | done | error
+  const [status, setStatus] = useState("idle"); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
