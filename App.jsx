@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 
 const API_URL = "https://api.tamironlineesfahan.ir/services";
 
-// ---------- Utilities ----------
 const toFarsiDigits = (str) =>
   String(str).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[d]);
 
