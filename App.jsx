@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react"
 import { useFetchServices } from "./hooks/useFetchServices";
 import { formatPrice } from "./utils/formatters";
 import { RequestForm } from "./components/RequestForm";
