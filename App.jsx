@@ -1,4 +1,4 @@
-import { useFetchServices } from "./hooks/useFetchService
+import { useFetchServices } from "./hooks/useFetchServic
 import { formatPrice } from "./utils/formatters";
 import { RequestForm } from "./components/RequestForm";
 
