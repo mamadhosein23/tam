@@ -1,149 +1,137 @@
-import React, { useState, useEffect, useRef } from "react";
-import { validatePhone, validateText } from "../utils/validators";
+import React, { useEffect } from "react";
+import { useRequestForm } from "./useRequestForm";
 
 export function RequestForm({ service, onClose }) {
-  const [form, setForm] = useState({ name: "", phone: "", address: "" });
-  const [errors, setErrors] = useState({});
-  const [status, setStatus] = useState("idle"); // "idle" | "loading" | "success" | "error"
-  const timerRef = useRef(null);
+  const { form, errors, status, serverError, handleChange, submit } =
+    useRequestForm({
+      serviceId: service?.id,
+      onSuccessClose: onClose,
+    });
 
-  // پاکسازی تایمر برای جلوگیری از نشت حافظه
+  // کنترل اسکرول صفحه و بستن با کلید Escape
   useEffect(() => {
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && status !== "loading") onClose();
     };
-  }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-    // پاک کردن خطای فیلد حین تایپ مجدد
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: null }));
-    }
-  };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
 
-  const validate = () => {
-    const newErrors = {};
-    if (!validateText(form.name)) {
-      newErrors.name = "لطفاً نام و نام خانوادگی معتبر وارد کنید.";
-    }
-    if (!validatePhone(form.phone)) {
-      newErrors.phone = "شماره تماس معتبر نیست (مثال: ۰۹۱۲۳۴۵۶۷۸۹).";
-    }
-    if (!validateText(form.address, 10)) {
-      newErrors.address = "آدرس باید حداقل شامل ۱۰ کاراکتر باشد.";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!validate()) return;
-
-    setStatus("loading");
-    try {
-      const res = await fetch(
-        `https://api.tamironlineesfahan.ir/services/${service?.id}/request`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(form),
-        }
-      );
-
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
-      setStatus("success");
-      timerRef.current = setTimeout(() => {
-        onClose();
-      }, 2000);
-    } catch (err) {
-      setStatus("error");
-    }
-  };
+    return () => {
+      document.body.style.overflow = "unset";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onClose, status]);
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div
+      className="modal-backdrop"
+      onClick={status !== "loading" ? onClose : undefined}
+      role="presentation"
+    >
       <div
-        className="modal-content"
+        className="modal-box"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="modal-title"
-        onClick={(e) => e.stopPropagation()} // جلوگیری از بسته‌شدن با کلیک داخل مودال
+        aria-labelledby="dialog-title"
+        onClick={(e) => e.stopPropagation()}
       >
-        <h2 id="modal-title">درخواست برای {service?.title}</h2>
+        <header className="modal-header">
+          <h2 id="dialog-title">درخواست تعمیر: {service?.title}</h2>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={onClose}
+            disabled={status === "loading"}
+            aria-label="بستن"
+          >
+            ×
+          </button>
+        </header>
 
         {status === "success" ? (
-          <div className="alert-success" role="status">
-            <p>درخواست با موفقیت ثبت شد! در حال بستن پنجره...</p>
+          <div className="status-banner success" role="alert">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
+              <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <p>درخواست با موفقیت ثبت شد. به‌زودی با شما تماس می‌گیریم.</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} noValidate>
-            <div className="form-group">
-              <label htmlFor="name">نام و نام خانوادگی</label>
+          <form onSubmit={submit} noValidate>
+            <div className="input-field">
+              <label htmlFor="client-name">نام و نام خانوادگی</label>
               <input
-                id="name"
+                id="client-name"
                 name="name"
                 value={form.name}
                 onChange={handleChange}
                 disabled={status === "loading"}
-                placeholder="مثال: علی رضایی"
+                placeholder="مثال: محمد احمدی"
+                autoComplete="name"
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? "name-error" : undefined}
               />
-              {errors.name && <span className="error-text">{errors.name}</span>}
+              {errors.name && <span id="name-error" className="field-error">{errors.name}</span>}
             </div>
 
-            <div className="form-group">
-              <label htmlFor="phone">شماره همراه</label>
+            <div className="input-field">
+              <label htmlFor="client-phone">شماره همراه جهت هماهنگی</label>
               <input
-                id="phone"
+                id="client-phone"
                 name="phone"
                 type="tel"
+                inputMode="numeric"
                 dir="ltr"
                 value={form.phone}
                 onChange={handleChange}
                 disabled={status === "loading"}
                 placeholder="0913..."
+                autoComplete="tel"
+                aria-invalid={!!errors.phone}
+                aria-describedby={errors.phone ? "phone-error" : undefined}
               />
-              {errors.phone && <span className="error-text">{errors.phone}</span>}
+              {errors.phone && <span id="phone-error" className="field-error">{errors.phone}</span>}
             </div>
 
-            <div className="form-group">
-              <label htmlFor="address">آدرس دقیق اعزام تکنسین</label>
+            <div className="input-field">
+              <label htmlFor="client-address">آدرس محل دستگاه</label>
               <textarea
-                id="address"
+                id="client-address"
                 name="address"
                 value={form.address}
                 onChange={handleChange}
                 disabled={status === "loading"}
-                placeholder="اصفهان، خیابان..."
+                placeholder="اصفهان، خیابان، کوچه، پلاک..."
                 rows={3}
+                aria-invalid={!!errors.address}
+                aria-describedby={errors.address ? "address-error" : undefined}
               />
-              {errors.address && <span className="error-text">{errors.address}</span>}
+              {errors.address && <span id="address-error" className="field-error">{errors.address}</span>}
             </div>
 
             {status === "error" && (
-              <p className="error-general" role="alert">
-                خطا در ثبت درخواست. لطفاً اتصال اینترنت را بررسی کرده و مجدد تلاش کنید.
-              </p>
+              <div className="status-banner error" role="alert">
+                <span>{serverError}</span>
+              </div>
             )}
 
-            <div className="actions">
-              <button type="submit" disabled={status === "loading"}>
-                {status === "loading" ? "در حال ارسال..." : "تایید و ارسال"}
+            <footer className="form-actions">
+              <button
+                type="submit"
+                className="btn-primary"
+                disabled={status === "loading"}
+              >
+                {status === "loading" ? "در حال ثبت اطلاعات..." : "تأیید و اعزام تکنسین"}
               </button>
               <button
                 type="button"
-                className="btn-secondary"
+                className="btn-outline"
                 onClick={onClose}
                 disabled={status === "loading"}
               >
                 انصراف
               </button>
-            </div>
+            </footer>
           </form>
         )}
       </div>
